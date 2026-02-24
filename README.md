@@ -2,7 +2,7 @@
 
 ## Announcements
 
-*There are currently no Announcements.*
+* **2026-02-24** — The venue has been confirmed: the course will be held in Seminarraum 119 (A3/SR 119) at Arnimallee 3 on the FUB Dahlem Campus.
 
 ## About us
 
