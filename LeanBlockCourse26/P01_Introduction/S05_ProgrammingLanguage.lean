@@ -347,3 +347,5 @@ example (P Q : Prop) : P ∧ Q → P := by sorry
 -- axioms don't require proofs!
 -- but this one is unnecessary, since it is inferred by our type system
 axiom this_is_our_first_axiom (P Q : Prop) : P ∧ Q → P
+
+#check hello
