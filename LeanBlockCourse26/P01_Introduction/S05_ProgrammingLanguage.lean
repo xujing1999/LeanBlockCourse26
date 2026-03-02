@@ -10,7 +10,7 @@ In Lean, we declare values using `def`. The type can be inferred or explicitly s
 def hello : String := "Hello, World!"
 #check hello
 
--- Types can be infered
+-- Types can be inferred
 def hello2 := "Hello, World!"
 #check hello2
 
@@ -139,13 +139,13 @@ def explicitSubInt (x y : Int) := x - y
 #check explicitSubInt 2 3    -- Int
 #eval explicitSubInt 2 3     -- 2 - 3 = -1 in Int
 
--- def implictSub (x y) := x - y -- unable to infer type
--- def implictSub (x y) : Int := x - y -- unable to infer type
-def implictSub (x : Int) y := x - y -- able to infer Int for y and output
-def implictSub' x (y : Int) := x - y -- able to infer Int for x and output
+-- def implicitSub (x y) := x - y -- unable to infer type
+-- def implicitSub (x y) : Int := x - y -- unable to infer type
+def implicitSub (x : Int) y := x - y -- able to infer Int for y and output
+def implicitSub' x (y : Int) := x - y -- able to infer Int for x and output
 
-#check implictSub'
-#eval implictSub' 2 3
+#check implicitSub'
+#eval implicitSub' 2 3
 
 /-
 Compare with:
@@ -163,22 +163,22 @@ let explicitNumber: number = 42;
 Some types can be coerced into other types, like Nat to Int.
 -/
 
-def implictSub'' (x : Nat) (y : Int) := x - y -- able to coerce y into Int and output
+def implicitSub'' (x : Nat) (y : Int) := x - y -- able to coerce y into Int and output
 
-#check implictSub''
-#eval implictSub'' 2 3
+#check implicitSub''
+#eval implicitSub'' 2 3
 
-def implictSub''' (x : Int) (y : Nat) := x - y -- able to coerce y to Int
+def implicitSub''' (x : Int) (y : Nat) := x - y -- able to coerce y to Int
 
-#check implictSub'''
-#eval implictSub''' 2 3
+#check implicitSub'''
+#eval implicitSub''' 2 3
 
 def inferredAdd' (x : Nat) (y : Int) := x + y
 
 def coercedOutputAdd (x y : Nat) : Int := x - y
 
 #check coercedOutputAdd 2 3 -- Nat → Nat → Int, but it uses the
-                            -- Int subtraction and coereces the Nat to Int
+                            -- Int subtraction and coerces the Nat to Int
 #eval coercedOutputAdd 2 3  -- 2 - 3 = -1 since x and y are both first coerced to Int
 
 /-
@@ -274,16 +274,16 @@ representing that proposition.
 -/
 
 -- This function claims it returns a Nat
-def t1 : Nat := 0 -- putting a string here would be a type error
+def myNat : Nat := 0 -- putting a string here would be a type error
 
-#check t1 -- Nat
-#eval t1  -- 0
+#check myNat -- Nat
+#eval myNat  -- 0
 
-def t2 : Nat := 0
+def idNat (n : Nat) : Nat := n
 
-def t3 (n : Nat) : Nat := n
+def constZero (n : Nat) : Nat := 0
 
--- def t4' n := n  -- Thus doesn't work because Lean cannot infer a type
+-- def idGeneric' n := n  -- This doesn't work because Lean cannot infer a type
 
 /-
 Compare with:
@@ -293,54 +293,52 @@ def foo(x):
 -/
 
 -- But we can "hack" our way around this by making
--- the arbitrary type of 'n' an argument of the method
-def t4 (T : Type) (n : T) : T := n
+-- the arbitrary type of 'n' an argument of the function
+def idGeneric (T : Type) (n : T) : T := n
 
-#eval t4 Nat 2
+#eval idGeneric Nat 2
 
-def t4' {T : Type} (n : T) : T := n -- curly brackets make T implicit
+def idGeneric' {T : Type} (n : T) : T := n -- curly brackets make T implicit
 
-#eval t4' 2
+#eval idGeneric' 2
 
--- We can prove that t3 and t4 applied to Nat return the same output!
-def t4_Nat_eq_t3 : t4 Nat = t3 := rfl
+-- We can prove that idNat and idGeneric applied to Nat return the same output!
+def idGeneric_Nat_eq_idNat : idGeneric Nat = idNat := rfl
 
 -- doesn't really matter if we use 'def' or 'theorem' here
-theorem t4_Nat_eq_t3' : t4 Nat = t3 := rfl
+theorem idGeneric_Nat_eq_idNat' : idGeneric Nat = idNat := rfl
 
 -- This does not work because not only the type is checked (Nat)
 -- but also the specific instance, which is not the same (0 != n)
--- example : t4 Nat = t2 := rfl
+-- example : idGeneric Nat = constZero := rfl
 
 -- A constructive proof of the type of the statement `P → P`
-def t5 (P : Prop) (p : P) : P := p
+def identity_proof (P : Prop) (p : P) : P := p
 
-theorem t6 (P : Prop) (p : P) : P := by
-  exact p -- same proof / method
+theorem identity_proof' (P : Prop) (p : P) : P := by
+  exact p -- same proof in tactic mode
 
--- Blurring the lines between programming a method and writing a proof:
--- How to proof P ∧ Q → P
+-- Blurring the lines between programming a function and writing a proof:
+-- How to prove P ∧ Q → P
 
 -- Term mode proof
-theorem t7 (P Q : Prop) : P ∧ Q → P := fun ⟨p, _⟩ => p
+theorem and_left_term (P Q : Prop) : P ∧ Q → P := fun ⟨p, _⟩ => p
 
-theorem t7' (P Q : Prop) : (P ∧ Q → P : Prop) := fun ⟨p, _⟩ => p
+theorem and_left_term' (P Q : Prop) : (P ∧ Q → P : Prop) := fun ⟨p, _⟩ => p
 
 -- Same proof in tactic mode
-theorem t7'' (P Q : Prop) : P ∧ Q → P := by
+theorem and_left_tactic (P Q : Prop) : P ∧ Q → P := by
   intro ⟨p, _⟩
   exact p
 
 -- They all have the same type and hence are proving the same theorem
-#check t7     -- ∀ (P Q : Prop), P ∧ Q → P
-#check t7'    -- ∀ (P Q : Prop), P ∧ Q → P
-#check t7''   -- ∀ (P Q : Prop), P ∧ Q → P
+#check and_left_term    -- ∀ (P Q : Prop), P ∧ Q → P
+#check and_left_term'   -- ∀ (P Q : Prop), P ∧ Q → P
+#check and_left_tactic  -- ∀ (P Q : Prop), P ∧ Q → P
 
 -- sorry skips the proof but type checker is happy
 example (P Q : Prop) : P ∧ Q → P := by sorry
 
 -- axioms don't require proofs!
 -- but this one is unnecessary, since it is inferred by our type system
-axiom this_is_our_first_axiom (P Q : Prop) : P ∧ Q → P
-
-#check hello
+axiom and_left_axiom (P Q : Prop) : P ∧ Q → P

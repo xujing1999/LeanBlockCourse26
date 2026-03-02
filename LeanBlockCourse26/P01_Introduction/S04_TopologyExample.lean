@@ -50,6 +50,7 @@ example {f : X → Y} {g : Y → Z}
 
 -- A proof in term mode
 example {f : X → Y} {g : Y → Z}
-        (hf : Continuous f) (hg : Continuous g) :
+        (f_cont : Continuous f) (g_cont : Continuous g) :
         Continuous (g ∘ f) :=
-  { isOpen_preimage := fun U U_open => hf.isOpen_preimage (g⁻¹' U) (hg.isOpen_preimage U U_open) }
+  { isOpen_preimage := fun U U_open =>
+      f_cont.isOpen_preimage (g⁻¹' U) (g_cont.isOpen_preimage U U_open) }

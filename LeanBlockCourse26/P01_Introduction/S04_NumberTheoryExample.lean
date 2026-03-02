@@ -26,35 +26,35 @@ open BigOperators Bool Nat
 theorem infinite_primes (n : ℕ) : ∃ p, Nat.Prime p ∧ n ≤ p := by
   let p := Nat.minFac (n ! + 1)
   use p
-  
+
   -- We start by showing that p is prime, which is true as long as n! is not 0
   have p_prime : Nat.Prime p := by
     apply minFac_prime
     suffices n ! ≠ 0 by simp [this]
     exact factorial_ne_zero n
-  
+
   -- We now have to show that n ≤ p
   suffices n ≤ p by exact ⟨p_prime, this⟩
-  
-  -- Assuming the contrary, we would get that ..
+
+  -- Assuming the contrary, we would get that ...
   by_contra h
   push_neg at h
-  
+
   -- ... p cannot divide 1 since it is prime ...
   have p_not_dvd_one : ¬(p ∣ 1) := Nat.Prime.not_dvd_one p_prime
-  
+
   -- ... but it would have to divide 1 since it divides both n! and n! + 1 ...
   have p_dvd_one : p ∣ 1 := by
-    
+
     have p_dvd_n_fac : p ∣ n ! := by
       apply dvd_factorial
       · exact minFac_pos (n ! + 1)
       · exact le_of_succ_le h
-    
+
     have p_dvd_n_fac_one : p ∣ n ! + 1 := minFac_dvd (n ! + 1)
-    
+
     exact (Nat.dvd_add_iff_right p_dvd_n_fac).mpr p_dvd_n_fac_one
-  
+
   -- ... a contradiction!
   contradiction
 
