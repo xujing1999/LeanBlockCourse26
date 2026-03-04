@@ -38,3 +38,4 @@ Participants need to **bring a laptop** to follow along and work on exercises. T
 - **[Unicode Input](UNICODE.md)** — backslash commands for all symbols used in the course
 - **[Tactic Reference](TACTICS.md)** — every tactic used in the course, by section
 - **[Resources](RESOURCES.md)** — textbooks, documentation, talks, and games
+- **[Addendum](ADDENDUM.md)** — follow-ups and clarifications from the lectures
