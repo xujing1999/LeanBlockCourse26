@@ -40,14 +40,13 @@ To prove `P ∧ Q`, we need to prove both `P` and `Q`. We can:
 -/
 
 #check And
-#check And.intro  -- arguments are `(a : Prop)` and `(b : Prop)` and output is `(a ∧ b : Prop)`
+#check And.intro  -- takes proofs `(left : a)` and `(right : b)` and produces `(a ∧ b)`
 
 -- Using `apply And.intro` will open two goals (one for `a` and one for `b`)
 
 -- The linter will complain about the following formatting, even though this
--- produces valid Lean code. So the `exact` tactic is slightly cleverer than
--- we originally assumed: it can handle multiple goals and close the first one
--- while keeping others open, so no longer quite the same behavior like a `return`.
+-- produces valid Lean code. Without `·` focusing, the proof block simply
+-- moves on to the next open goal after each tactic closes the current one.
 -- Note that the order matters though, so `exact q; exact p` does not work.
 theorem goal_and_apply (P Q : Prop) (p : P) (q : Q) : P ∧ Q := by
   apply And.intro
@@ -258,7 +257,7 @@ example (P Q R : Prop) (h₁ : P → Q) (h₂ : P → R) : P → (Q ∧ R) :=
 /-
 ## Intermission: The `repeat`, `all_goals`, `try`, and `<;>` tactics
 
-- `repeat tac` repeatedly applies `tac` to the main goals until it fails.
+- `repeat tac` repeatedly applies `tac` to the main goal until it fails.
 - `all_goals tac` runs `tac` on each goal, concatenating the resulting goals, if any.
 - `try tac` attempts to run `tac` without causing failure if it does not apply.
 - `tac <;> tac'` runs `tac` on the main goal and `tac'` on each produced goal.
@@ -303,15 +302,15 @@ example (P Q : Prop) (h : P ∧ Q) : Q ∧ P := by
 example (P Q : Prop) (h : P ∧ Q) : Q ∧ P := by
   obtain ⟨p, q⟩ := h
   constructor
-  repeat exact q  -- correctly applies to first goal
+  repeat exact q  -- succeeds on goal 1 (Q), then fails on goal 2 (P) and stops
   exact p
 
 example (P Q : Prop) (h : P ∧ Q) : Q ∧ P := by
   obtain ⟨p, q⟩ := h
   constructor
-  repeat exact p  -- works technically but doesn't actually do anything (linter complains)
-  exact q
-  exact p
+  repeat exact p  -- fails immediately on goal 1 (Q), so this is a no-op
+  exact q          -- closes goal 1 (Q)
+  exact p          -- closes goal 2 (P)
 
 -- This fails: `all_goals` *actually* applies, *repeat* just tried to apply and stops
 -- example (P Q : Prop) (h : P ∧ Q) : Q ∧ P := by
@@ -344,9 +343,9 @@ example (P Q : Prop) (h : P ∧ Q) : Q ∧ P := by
 /-
 Basically: chained `<;>` is the same as an indented `all_goals` block.
 
-* `all_goals` is parallel but fails if something does not fit the expected type
-* `repeat` is sequential and stops if something does not fit the expected type
-* `all_goals` combined with `try` is parallel and does not fail
+* `all_goals` applies to all goals but fails if the tactic does not fit one of them
+* `repeat` applies to the current goal only and stops on first failure
+* `all_goals` combined with `try` applies to all goals and does not fail
 -/
 
 /-
@@ -357,6 +356,10 @@ To prove P ∨ Q, we need to prove either P or Q. We can:
 - Use `apply Or.inl`/`Or.inr` explicitly
 - Use `left`/`right` as shorthand
 -/
+
+#check Or
+#check Or.inl     -- takes a proof `(a : P)` and produces `(P ∨ Q)`
+#check Or.inr     -- takes a proof `(b : Q)` and produces `(P ∨ Q)`
 
 -- The most explicit way to deal with `∨` in goal is to
 -- directly use `apply Or.inl` or `apply Or.inr`
@@ -400,8 +403,8 @@ To use `h : P ∨ Q`, we can:
 -/
 
 -- We can deal with `∨` in a hypothesis by applying `Or.elim` directly,
--- again using `·` to structure the proof to the sub-goals. Note that 
--- `Or.elim {...} (h : a ∨ b) (left : a → c) (right : b → c) : c`
+-- again using `·` to structure the proof to the sub-goals. Note that
+-- `Or.elim {a b c : Prop} (h : a ∨ b) (left : a → c) (right : b → c) : c`
 
 -- Viewing `Or.elim` as a method, the most obvious thing to do is ...
 example (P Q R : Prop) (h : P ∨ Q) (p_to_r : P → R) (q_to_r : Q → R) : R := by
@@ -418,7 +421,8 @@ example (P Q R : Prop) (h : P ∨ Q) (p_to_r : P → R) (q_to_r : Q → R) : R :
   · exact p_to_r  -- Note that you do not have `p : P` in the assumptions here ...
   · exact q_to_r  -- ... and likewise you do not have `q : Q` here.
 
--- ... but if you really want a case distinction as you expect it, you need.
+-- ... but if you really want a case distinction as you expect it, you
+-- need to `intro` the hypothesis in each branch.
 example (P Q R : Prop) (h : P ∨ Q) (p_to_r : P → R) (q_to_r : Q → R) : R := by
   apply Or.elim h
   · intro p
