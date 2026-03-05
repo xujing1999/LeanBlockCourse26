@@ -337,7 +337,8 @@ accessing classical axioms when needed.
 -/
 
 -- Exercise 2.1
--- This is `mt` (modus tollens) in Lean (Init.Core); `Function.mt` in Mathlib.Logic.Basic enables `h.mt`
+-- This is `mt` (modus tollens) in Lean (Init.Core)
+-- `Function.mt` in Mathlib.Logic.Basic enables dot notation `h.mt`
 -- Prove this constructively, i.e., using intuitionistic logic
 -- and verify no axioms were used with `#print axioms _`
 theorem exercise_2_1_constructive (P Q : Prop) : (P → Q) → (¬Q → ¬P) := by
