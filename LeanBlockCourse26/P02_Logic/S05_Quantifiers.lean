@@ -138,7 +138,7 @@ The `ext` tactic proves function extensionality, reducing a goal `f = g`
 to proving `f x = g x` for arbitrary `x`. It is used around 11,000 times in mathlib.
 -/
 
--- This is `funext` in Lean (Init.Core); `funext_iff` (Init.Ext) provides the biconditional
+-- This is `funext` in Lean (Init.Core); `funext_iff` (Mathlib) provides the biconditional
 theorem func_ext (X Y : Type) (f g : X → Y) (h : ∀ x : X, f x = g x) : f = g := by
   ext x
   exact h x
@@ -164,7 +164,7 @@ variable {α : Type} (p q : α → Prop)
 
 -- Exercise 1.1
 
--- We can grind through this ourselfs ...
+-- We can grind through this ourselves ...
 example : (∀ x : α, p x ∧ q x) ↔ ((∀ x : α, p x) ∧ (∀ x : α, q x)) := by
   constructor
   · intro h
@@ -181,7 +181,7 @@ example : (∀ x : α, p x ∧ q x) ↔ ((∀ x : α, p x) ∧ (∀ x : α, q x)
     have qx := h₂ x
     exact ⟨px, qx⟩
 
--- ... or have lean do it for us using the `grind` tactic ...
+-- ... or have Lean do it for us using the `grind` tactic ...
 example : (∀ x : α, p x ∧ q x) ↔ ((∀ x : α, p x) ∧ (∀ x : α, q x)) := by
   grind
 

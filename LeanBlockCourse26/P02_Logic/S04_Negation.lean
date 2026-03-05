@@ -165,7 +165,7 @@ theorem nnp_of_p_exercise_push_neg (P : Prop) : P → ¬¬P := by
 #print axioms nnp_of_p_exercise_push_neg
 
 -- Exercise 1.1b
--- Prove the statement without `push_neg` amd without classical
+-- Prove the statement without `push_neg` and without classical
 -- logic, i.e., use `#print axioms` to make sure you are not
 -- dependent on any (`Classical.`) axioms!
 theorem nnp_of_p_exercise_fun (P : Prop) : P → ¬¬P := by
@@ -296,7 +296,7 @@ axiom Classical.choice {α : Sort u} : Nonempty α → α
 ```
 -/
 
--- You can directly invoke the axiom `Classical.choice` ...
+-- You can directly invoke `Classical.em` (which uses `Classical.choice` internally) ...
 example (P : Prop) : P ∨ ¬P := by
   have p_or_np := Classical.em P
   exact p_or_np
