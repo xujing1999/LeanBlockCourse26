@@ -199,20 +199,22 @@ example : (∃ x, p x ∧ q x) → (∃ x, p x) ∧ (∃ x, q x) := by
 
 -- Exercise 1.4
 -- Hint: use the `choose` tactic
-example (R : α → α → Prop) (h : ∀ x, ∃ y, R x y) : ∃ f : α → α, ∀ x, R x (f x) := by
+example (R : α → α → Prop) (h : ∀ x, ∃ y, R x y) :
+    ∃ f : α → α, ∀ x, R x (f x) := by
   choose f hf using h
   use f
 
 -- Exercise 1.5 (Master)
 -- Note that this introduces the cartesian product of two types `α × β`
-example {β} (Y : Type) (r : β → Prop)
+example {β} (r : β → Prop)
     (h₁ : ∃ x, p x) (h₂ : ∃ y, r y) : ∃ z : α × β, p z.1 ∧ r z.2 := by
   obtain ⟨x, px⟩ := h₁
   obtain ⟨y, qy⟩ := h₂
   use ⟨x, y⟩
 
 -- Exercise 1.6 (Master)
-example (α : Type) (p q : α → Prop) : (∃ x : α, p x ∨ q x) ↔ ((∃ x : α, p x) ∨ (∃ x : α, q x)) := by
+example (α : Type) (p q : α → Prop) :
+    (∃ x : α, p x ∨ q x) ↔ ((∃ x : α, p x) ∨ (∃ x : α, q x)) := by
   constructor
   · intro h
     obtain ⟨x, px | qx⟩ := h
